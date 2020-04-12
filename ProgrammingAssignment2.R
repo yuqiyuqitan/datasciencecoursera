@@ -1,29 +1,51 @@
-#ProgrammingAssignment2
+############################Solutions: Lexical Scoping
 
-#first function
-makeVector <- function(x = numeric()) {
-  m <- NULL
-  set <- function(y) {
+#makeCacheMatrix
+#This function creates a special "matrix" object that can cache its inverse.
+makeCacheMatrix <- function(x=matrix()){
+  inv <- NULL
+  set <- function(y){
     x <<- y
-    m <<- NULL
+    inv <<- NULL
   }
   get <- function() x
-  setmean <- function(mean) m <<- mean
-  getmean <- function() m
-  list(set = set, get = get,
-       setmean = setmean,
-       getmean = getmean)
+  setInverse <- function(inverse) inv <<- inverse
+  getInverse <- function() inv
+  list(set = set, 
+       get = get, 
+       setInverse = setInverse, 
+       getInverse = getInverse)
+  
 }
 
-#second function
-cachemean <- function(x, ...) {
-  m <- x$getmean()
-  if(!is.null(m)) {
+#cacheSolve
+#This function computes the inverse of the special "matrix" returned by makeCacheMatrix above. 
+#If the inverse has already been calculated (and the matrix has not changed), then the cachesolve should retrieve the inverse from the cache.
+cacheSolve <- function(x,...){
+  inv <- x$getInverse()
+  if(!is.null(inv)){
     message("getting cached data")
-    return(m)
+    return(inv)
   }
   data <- x$get()
-  m <- mean(data, ...)
-  x$setmean(m)
-  m
+  inv <- solve(data,...)
+  x$setInverse(inv)
+  inv
 }
+
+#################################### test functions
+set.seed(1)
+m <- matrix(rnorm(25), 5,5)
+cm <- makeCacheMatrix(m)
+
+#get data
+cm$get()
+
+#get inverse
+cm$getInverse()
+
+#solve inverse
+cacheSolve(cm)
+
+#cache inverse data
+cacheSolve(cm)
